@@ -57,7 +57,20 @@ pub fn part_one(input: &str) -> i64 {
     return tree_encounters;
 }
 
+/**
+ * Basically the same as part one, but this time
+ * we need to traverse the given map with multiples slopes
+ * and multiply the tree_encounters after each pass
+ */
 pub fn part_two(input: &str) -> i64 {
+
+    // slopes:
+    // { h: 1, v: 1 }
+    // { h: 3, v: 1 }
+    // { h: 5, v: 1 }
+    // { h: 7, v: 1 }
+    // { h: 1, v: 2 }
+
     return 0;
 }
 
@@ -69,6 +82,6 @@ mod tests {
     }
     #[test]
     fn part_two() {
-        assert_eq!(super::part_two(include_str!("testinput")), 1);
+        assert_eq!(super::part_two(include_str!("testinput")), 336);
     }
 }
