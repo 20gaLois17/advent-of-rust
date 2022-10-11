@@ -1,6 +1,7 @@
 mod day01;
 mod day02;
 mod day03;
+mod day04;
 // mod day04;
 fn main() {
     day01::part_one(include_str!("./day01/input"));
