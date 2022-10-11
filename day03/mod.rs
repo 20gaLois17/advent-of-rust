@@ -7,18 +7,22 @@
  * by calculating the modulo between the interpolated horizontal distance and the width of the map
  */
 use std::collections::HashSet;
-pub fn part_one(input: &str) -> i64 {
 
-    #[derive(Hash, Eq, PartialEq, Debug)]
-    struct Tree {
-        x: usize,
-        y: usize,
-    }
-    struct Slope {
-        h: usize,
-        v: usize,
-    }
+#[derive(Debug)]
+struct Slope {
+    h: usize,
+    v: usize,
+}
 
+#[derive(Hash, Eq, PartialEq, Debug)]
+struct Tree {
+    x: usize,
+    y: usize,
+}
+
+pub fn part_one(input: &str, slope_h: usize, slope_v: usize) -> i64 {
+
+    let slope:Slope = Slope { h: slope_h, v: slope_v };
     let mut trees: HashSet<Tree> = HashSet::new();
 
     let mut maxy :usize = 0;
@@ -34,8 +38,6 @@ pub fn part_one(input: &str) -> i64 {
             }
         }
     }
-
-    let slope:Slope = Slope { h: 3, v: 1 };
 
     let mut tree_encounters = 0;
     // if we treat current_position as a Tree struct, we have
@@ -64,21 +66,28 @@ pub fn part_one(input: &str) -> i64 {
  */
 pub fn part_two(input: &str) -> i64 {
 
-    // slopes:
-    // { h: 1, v: 1 }
-    // { h: 3, v: 1 }
-    // { h: 5, v: 1 }
-    // { h: 7, v: 1 }
-    // { h: 1, v: 2 }
+    let slopes: [Slope; 5] = [
+        Slope { h: 1, v: 1 },
+        Slope { h: 3, v: 1 },
+        Slope { h: 5, v: 1 },
+        Slope { h: 7, v: 1 },
+        Slope { h: 1, v: 2 }
+    ];
 
-    return 0;
+    let mut result: i64 = 1;
+    for slope in slopes.iter() {
+        result *= part_one(input, slope.h, slope.v);
+    }
+
+    println!("day03 -> part two: {}", result);
+    return result;
 }
 
 #[cfg(test)]
 mod tests {
     #[test]
     fn part_one() {
-        assert_eq!(super::part_one(include_str!("testinput")), 7);
+        assert_eq!(super::part_one(include_str!("testinput"), 3, 1), 7);
     }
     #[test]
     fn part_two() {

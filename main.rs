@@ -9,5 +9,6 @@ fn main() {
     day02::part_one(include_str!("./day02/input"));
     day02::part_two(include_str!("./day02/input"));
 
-    day03::part_one(include_str!("./day03/input"));
+    day03::part_one(include_str!("./day03/input"), 3, 1);
+    day03::part_two(include_str!("./day03/input"));
 }
