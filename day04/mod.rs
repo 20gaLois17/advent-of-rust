@@ -1,5 +1,24 @@
 pub fn part_one(input: &str) -> i64 {
-    return 0;
+    let mut result: i64 = 0;
+    for line in input.trim().split("\n\n") {
+        let codes:Vec<&str> = line.split_whitespace().collect();
+        let mut inc: bool = true;
+        if codes.len() < 7 {
+            inc = false;
+        }
+        if codes.len() == 7 {
+            for code in codes {
+                if code.contains("cid:") {
+                    inc = false;
+                }
+            }
+        }
+        if inc {
+            result += 1;
+        }
+    }
+    println!("day04 -> part one: {}", result);
+    return result;
 }
 
 pub fn part_two(input: &str) -> i64 {
