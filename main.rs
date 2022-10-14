@@ -16,4 +16,6 @@ fn main() {
 
     day04::part_one(include_str!("./day04/input"));
     day04::part_two(include_str!("./day04/input"));
+
+    day05::part_one(include_str!("./day05/input"));
 }
