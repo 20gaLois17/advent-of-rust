@@ -8,7 +8,27 @@ pub fn part_one(input: &str) -> i64 {
     println!("day05 -> part one: {}", result);
     return result;
 }
+
+/**
+ * we have 839 / 1024 seats on the list and are looking for a missing_id
+ * 1) the missing_id is not on the list
+ * 2) missing_id + 1 and missing_id - 1 need to be on the list
+ * 3) if that doesn't yield a unique solution, we also know that the front row and
+ *    back row are empty (should automatically be inferred from 2) though)
+ */
 pub fn part_two(input: &str) -> i64 {
+    //let mut result: i64 = 0;
+    let seats: Vec<i64> = input.trim().split('\n').map(|e| convert_to_seat_id(e)).collect();
+    let mut seat_candidates: Vec<i64> = vec![];
+        for i in 0..1024 {
+        if !seats.contains(&i) {
+            if seats.contains(&(i-1)) && seats.contains(&(i+1)) {
+                seat_candidates.push(i);
+            }
+        }
+    }
+    assert_eq!(seat_candidates.len(), 1);
+    println!("day05 -> part two: {}", seat_candidates[0]);
     return 0;
 }
 
@@ -30,9 +50,9 @@ pub fn bin_search(arr: [i64; 2], bounds: [char; 2], val: &str) -> i64{
         return if c == bounds[0] {arr[0]} else {arr[1]};
     } else {
         // recurse ...
-        let slice = if c == bounds[0] { 
+        let slice = if c == bounds[0] {
             [arr[0], (arr[0]+arr[1])/2] // use left half
-        } else { 
+        } else {
             [(arr[0]+arr[1]+1)/2, arr[1]] // use right half
         };
         return bin_search(slice, bounds, &val[1..]);
