@@ -11,7 +11,7 @@ pub fn part_one(input: &str) -> i64 {
     // init: we are starting with "shiny gold" bag
     let mut candidates: Vec<Bag> = vec![
         Bag {
-            color: "shiny gold".to_string(), 
+            color: "shiny gold".to_string(),
             nested_colors: HashMap::from_iter([("dark red".to_string(), 2)])
         }
     ];
@@ -37,25 +37,11 @@ pub fn part_two(input: &str) -> i64 {
     for line in input.trim().split('\n') {
         all_bags.push(Bag::new(line));
     }
-    // for bag in &all_bags {
-    //     println!("{:?}", bag);
-    // }
-    // init: we are starting with "shiny gold" bag
-    let mut candidates: Vec<Bag> = vec![
-        Bag {
-            color: "shiny gold".to_string(), 
-            nested_colors: HashMap::from_iter([("dark red".to_string(), 2)])
-        }
-    ];
+    let list: Vec<&Bag>   = all_bags.iter().filter(|e| e.color == "shiny gold".to_string()).collect();
+    assert_eq!(list.len(), 1);
+    let shiny_gold: Bag   = list[0].clone();
 
-    let mut result: i64 = 0;
-    while let Some(bag) = candidates.pop() {
-        for child in &all_bags {
-            if bag.can_contain(&child.color) {
-                candidates.push(child.clone());
-            }
-        }
-    }
+    let result: i64 = count_nested(shiny_gold, all_bags).try_into().unwrap();
     println!("day07 -> part two: {}", result);
     return result;
 }
@@ -80,7 +66,7 @@ impl Bag {
             } else {
                 let chunk: Vec<String> = desc.split(' ').map(|e| e.to_string()).collect();
                 let col: String = chunk[2..4].join(" ").to_string();
-                self_quantities.insert(col.clone(), chunk[1].parse::<usize>().unwrap());
+                self_quantities.insert(col, chunk[1].parse::<usize>().unwrap());
            }
         }
 
@@ -91,6 +77,25 @@ impl Bag {
     }
     fn can_contain(&self, color: &str) -> bool {
         return self.nested_colors.contains_key(&color.to_string());
+    }
+}
+
+// recursive helper function
+// there don't seem to be circular relations ...
+fn count_nested(bag: Bag, all_bags: Vec<Bag>) -> usize {
+    let mut next_round_candidates: Vec<Bag> = vec![];
+    for child in &all_bags {
+        if bag.can_contain(&child.color) {
+            next_round_candidates.push(child.clone());
+        }
+    }
+    if next_round_candidates.len() == 0 {
+        return 0;
+    } else {
+        return next_round_candidates.iter().map(|e| {
+                let multiplier: usize = bag.nested_colors[&e.color];
+                return multiplier * (1 + count_nested(e.clone(), all_bags.clone()))
+            }).sum()
     }
 }
 
@@ -108,11 +113,10 @@ mod tests {
                 .can_contain("mellow green"));
         assert!(!super::Bag::new("solid black bags contain 1 bright dark blue, 2 mellow green bags.")
                 .can_contain("light blue"));
-        assert!(super::Bag::new("shiny gold bags contain 2 dark red bags.")
-                .can_contain("dark red"));
     }
     #[test]
     fn part_two() {
+        assert_eq!(super::part_two(include_str!("testinput")), 32);
         assert_eq!(super::part_two(include_str!("testinput_2")), 126);
     }
 }
