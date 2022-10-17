@@ -1,8 +1,20 @@
 use std::str::FromStr;
+use std::collections::HashSet;
+
 pub fn part_one(input: &str) -> i64 {
-    let mut console: GameConsole = GameConsole::new();
-    println!("{:?}", console);
-    return 0;
+    let mut console: GameConsole = GameConsole::init();
+
+    for (index, line) in input.trim().split('\n').enumerate() {
+        let instr: Vec<&str> = line.split(' ').collect();
+        console.program[index] = Instruction::new(instr[0], instr[1]);
+    }
+
+    while !console.is_loop() {
+        console.run_instruction();
+    }
+
+    println!("day08 -> part one: {}", console.acc);
+    return console.acc;
 }
 pub fn part_two(input: &str) -> i64 {
     return 0;
@@ -10,30 +22,46 @@ pub fn part_two(input: &str) -> i64 {
 
 #[derive(Debug)]
 struct GameConsole {
-    program: [Instruction; 8],
+    program: [Instruction; 1024],
     ip: usize, // instruction pointer
-    acc: i64,
+    acc: i64,  // accumulator
+    visited_ip: HashSet<usize>
 }
+
 impl GameConsole {
-    fn new() -> Self {
+    fn init() -> Self {
         GameConsole {
-            program: [Instruction::nop(); 8],
+            program: [Instruction::new("nop", "0"); 1024],
             ip: 0,
             acc: 0,
+            visited_ip: HashSet::new()
         }
     }
-    fn execute_instruction(&mut self) {
+    fn run_instruction(&mut self) {
+        self.visited_ip.insert(self.ip);
         match self.program[self.ip].operation {
             OpCode::Nop => {
                 self.ip += 1;
             }
             OpCode::Acc => {
-                // TODO: implement
+                self.acc += self.current_instr_val();
+                self.ip  += 1;
             }
             OpCode::Jmp => {
-                // TODO: implement
+                let jump_offset: usize = self.current_instr_val().abs().try_into().unwrap();
+                if self.current_instr_val() > 0 {
+                    self.ip = self.ip.checked_add(jump_offset).unwrap();
+                } else {
+                    self.ip = self.ip.checked_sub(jump_offset).unwrap();
+                }
             }
         }
+    }
+    fn is_loop(&self) -> bool {
+        return self.visited_ip.contains(&self.ip);
+    } 
+    fn current_instr_val(&self) -> i64 {
+        return self.program[self.ip].value;
     }
 }
 #[derive(Eq, PartialEq, Debug, Clone, Copy)]
@@ -43,10 +71,10 @@ struct Instruction {
 }
 
 impl Instruction {
-    fn nop() -> Instruction {
+    fn new(op_code: &str, value: &str) -> Instruction {
         Instruction {
-            operation: OpCode::Nop,
-            value: 0
+            operation: OpCode::from_str(op_code).unwrap(),
+            value: value.parse::<i64>().unwrap()
         }
     }
 }
