@@ -4,12 +4,13 @@ use std::collections::HashSet;
 pub fn part_one(input: &str) -> i64 {
     let mut console: GameConsole = GameConsole::init();
 
+    // init program
     for (index, line) in input.trim().split('\n').enumerate() {
         let instr: Vec<&str> = line.split(' ').collect();
         console.program[index] = Instruction::new(instr[0], instr[1]);
     }
 
-    while !console.is_loop() {
+    while !console.is_program_loop() {
         console.run_instruction();
     }
 
@@ -17,6 +18,30 @@ pub fn part_one(input: &str) -> i64 {
     return console.acc;
 }
 pub fn part_two(input: &str) -> i64 {
+    let mut console: GameConsole = GameConsole::init();
+    // init program
+    for (index, line) in input.trim().split('\n').enumerate() {
+        let instr: Vec<&str> = line.split(' ').collect();
+        console.program[index] = Instruction::new(instr[0], instr[1]);
+    }
+    // brute force our way to victory
+    for i in 0..console.program.len() {
+        // reset state
+        console.visited_ip.clear();
+        console.ip = 0;
+        console.acc = 0;
+        console.switch_instructions(i);
+        while !console.is_program_loop() {
+            if console.is_program_end() {
+                println!("day08 -> part two: {}", console.acc);
+                return console.acc;
+            } else {
+                console.run_instruction();
+            }
+        }
+        // we are not done yet, return to previous state
+        console.switch_instructions(i);
+    }
     return 0;
 }
 
@@ -25,15 +50,17 @@ struct GameConsole {
     program: [Instruction; 1024],
     ip: usize, // instruction pointer
     acc: i64,  // accumulator
-    visited_ip: HashSet<usize>
+    end: bool,
+    visited_ip: HashSet<usize>,
 }
 
 impl GameConsole {
     fn init() -> Self {
         GameConsole {
-            program: [Instruction::new("nop", "0"); 1024],
+            program: [Instruction::new("end", "0"); 1024],
             ip: 0,
             acc: 0,
+            end: false,
             visited_ip: HashSet::new()
         }
     }
@@ -55,13 +82,36 @@ impl GameConsole {
                     self.ip = self.ip.checked_sub(jump_offset).unwrap();
                 }
             }
+            OpCode::End => {
+                self.ip  += 1;
+                self.end = true;
+            }
         }
     }
-    fn is_loop(&self) -> bool {
+    fn switch_instructions(&mut self, pointer: usize) {
+        match self.program[pointer].operation {
+            OpCode::Acc => {}
+            OpCode::Nop => {
+                self.program[pointer].operation = OpCode::Jmp;
+            }
+            OpCode::Jmp => {
+                self.program[pointer].operation = OpCode::Nop;
+            }
+            OpCode::End => {}
+        }
+    }
+    fn is_program_loop(&self) -> bool {
         return self.visited_ip.contains(&self.ip);
-    } 
+    }
+    fn is_program_end(&self) -> bool {
+        return self.end;
+    }
     fn current_instr_val(&self) -> i64 {
         return self.program[self.ip].value;
+    }
+    fn run_verbose_instruction(&mut self) {
+        println!("running instruction {:?}", self.program[self.ip]);
+        self.run_instruction();
     }
 }
 #[derive(Eq, PartialEq, Debug, Clone, Copy)]
@@ -84,6 +134,7 @@ enum OpCode {
     Nop,
     Acc,
     Jmp,
+    End
 }
 
 impl FromStr for OpCode {
@@ -93,7 +144,8 @@ impl FromStr for OpCode {
             "nop" => Ok(OpCode::Nop),
             "acc" => Ok(OpCode::Acc),
             "jmp" => Ok(OpCode::Jmp),
-            _     => Err(()), 
+            "end" => Ok(OpCode::End),
+            _     => Err(()),
         }
     }
 }
@@ -106,6 +158,6 @@ mod tests {
     }
     #[test]
     fn part_two() {
-        assert_eq!(super::part_two(include_str!("testinput")), 1);
+        assert_eq!(super::part_two(include_str!("testinput")), 8);
     }
 }
