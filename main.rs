@@ -8,6 +8,7 @@ mod day07;
 mod day08;
 mod day09;
 mod day10;
+mod day11;
 
 fn main() {
     day01::part_one(include_str!("./day01/input"));
@@ -39,4 +40,7 @@ fn main() {
 
     day10::part_one(include_str!("./day10/input"));
     day10::part_two(include_str!("./day10/input"));
+
+    day11::part_one(include_str!("./day11/input"));
+    day11::part_two(include_str!("./day11/input"));
 }

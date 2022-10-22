@@ -19,7 +19,6 @@ pub fn part_one(input: &str) -> usize {
 pub fn part_two(input: &str) -> usize {
     let numbers = create_sorted_adapter_array(input);
 
-    let last_link = numbers[numbers.len()-1];
     let mut delta_1 = 0;
     let mut delta_3 = 0;
     let mut result  = 1; // we have at least one sulution
