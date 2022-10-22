@@ -1,9 +1,7 @@
 pub fn part_one(input: &str) -> usize {
-    let mut numbers: Vec<usize> = input.trim().split('\n').map(|e| e.parse().unwrap()).collect();
-    numbers.sort();
-    // there is always one difference of jolt '1' and '3' to account for in advance
-    let mut delta_1 = 1;
-    let mut delta_3 = 1;
+    let numbers = create_sorted_adapter_array(input);
+    let mut delta_1 = 0;
+    let mut delta_3 = 0;
     for i in 0..numbers.len()-1 {
         match numbers[i+1] - numbers[i] {
             1 => delta_1 += 1,
@@ -16,9 +14,18 @@ pub fn part_one(input: &str) -> usize {
     return result;
 }
 
-
 pub fn part_two(input: &str) -> usize {
-    return 0;
+    let numbers = create_sorted_adapter_array(input);
+}
+
+fn create_sorted_adapter_array(input: &str) -> Vec<usize> {
+    let mut numbers: Vec<usize> = input.trim().split('\n')
+        .map(|e| e.parse().unwrap())
+        .collect();
+    numbers.push(0); // we need to account for implicit lowest adapter
+    numbers.sort();
+    numbers.push(numbers[numbers.len()-1] + 3); // we need to account for highest adapter
+    return numbers;
 }
 
 #[cfg(test)]
@@ -29,6 +36,6 @@ mod tests {
     }
     #[test]
     fn part_two() {
-        assert_eq!(super::part_two(include_str!("testinput")), 62);
+        assert_eq!(super::part_two(include_str!("testinput")), 8);
     }
 }
