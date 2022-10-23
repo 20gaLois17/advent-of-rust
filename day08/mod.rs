@@ -109,10 +109,6 @@ impl GameConsole {
     fn current_instr_val(&self) -> i64 {
         return self.program[self.ip].value;
     }
-    fn run_verbose_instruction(&mut self) {
-        println!("running instruction {:?}", self.program[self.ip]);
-        self.run_instruction();
-    }
 }
 #[derive(Eq, PartialEq, Debug, Clone, Copy)]
 struct Instruction {

@@ -4,10 +4,9 @@ pub fn part_one(input: &str) -> usize {
         .collect();
 
     // setup and first run
-    let mut iterations: usize = 1;
     let mut updates: Vec<[usize; 2]> = vec![];
     for (i, row) in board.iter().enumerate() {
-        for (k, col) in row.iter().enumerate() {
+        for (k, _) in row.iter().enumerate() {
             if will_change(&board, i, k) {
                 updates.push([i, k]);
             }
@@ -15,7 +14,6 @@ pub fn part_one(input: &str) -> usize {
     }
 
     while updates.len() > 0 {
-        iterations += 1;
         for update in updates.iter() {
             let row_index: usize = update[0];
             let col_index: usize = update[1];
@@ -37,7 +35,7 @@ pub fn part_one(input: &str) -> usize {
 
         updates = vec![];
         for (i, row) in board.iter().enumerate() {
-            for (k, col) in row.iter().enumerate() {
+            for (k, _) in row.iter().enumerate() {
                 if will_change(&board, i, k) {
                     updates.push([i, k]);
                 }
@@ -81,10 +79,9 @@ pub fn part_two(input: &str) -> usize {
         .collect();
 
     // setup and first run
-    let mut iterations: usize = 1;
     let mut updates: Vec<[usize; 2]> = vec![];
     for (i, row) in board.iter().enumerate() {
-        for (k, col) in row.iter().enumerate() {
+        for (k, _) in row.iter().enumerate() {
             if will_change_two(&board, i, k) {
                 updates.push([i, k]);
             }
@@ -92,7 +89,6 @@ pub fn part_two(input: &str) -> usize {
     }
     //for i in 0..1 {
     while updates.len() > 0 {
-        iterations += 1;
         for update in updates.iter() {
             let row_index: usize = update[0];
             let col_index: usize = update[1];
@@ -114,7 +110,7 @@ pub fn part_two(input: &str) -> usize {
 
         updates = vec![];
         for (i, row) in board.iter().enumerate() {
-            for (k, col) in row.iter().enumerate() {
+            for (k, _) in row.iter().enumerate() {
                 if will_change_two(&board, i, k) {
                     updates.push([i, k]);
                 }
